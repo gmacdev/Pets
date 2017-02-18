@@ -74,7 +74,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private int mGender = PetEntry.GENDER_UNKNOWN;
     private static final int PET_LOADER = 0;
     private Uri mCurrentPetUri;
-    Cursor cursor;
     private boolean mPetHasChanged = false;
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
@@ -336,7 +335,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
 
@@ -383,12 +382,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
-        mNameEditText.setText("");
-        mBreedEditText.setText("");
-        mWeightEditText.setText("");
-        mGenderSpinner.setSelection(0); // Select "Unknown" gender
-    }
 
+    }
 
 
     private void showUnsavedChangesDialog(

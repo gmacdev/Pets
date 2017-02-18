@@ -42,15 +42,31 @@ import com.example.android.pets.data.PetContracts;
 import com.example.android.pets.data.PetContracts.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
 
+import java.util.Random;
+
 /**
  * Displays list of pets that were entered and stored in the app.
  */
-public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private PetDbHelper mDbHelper;
     private static final int PET_LOADER = 0;
     PetCursorAdapter mCursorAdapter;
     Cursor cursor;
+    private Random random = new Random();
+    public final String[][] dummyPets = {
+            {"Tommy", "Terrier", "7"},
+            {"Jack", "Pug", "15"},
+            {"Jessica", "Persian Cat", "13"},
+            {"Noel", "Beagle", "13"},
+            {"Rock", "German Shepherd", "26"},
+            {"Dan", "Bulldog", "37"},
+    };
+
+    public final int[] dummyGender = {
+            PetEntry.GENDER_MALE,
+            PetEntry.GENDER_FEMALE,
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +97,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent =  new Intent(CatalogActivity.this, EditorActivity.class);
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
                 Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
                 intent.setData(currentPetUri);
                 startActivity(intent);
@@ -89,7 +105,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         });
 
         //kick off the loader
-        getLoaderManager().initLoader(PET_LOADER,null,this);
+        getLoaderManager().initLoader(PET_LOADER, null, this);
     }
 
 
@@ -120,18 +136,22 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private void insertPet() {
 
         // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+        // and array dummypet/dummyGender attributes are the values.
         ContentValues values = new ContentValues();
-        values.put(PetContracts.PetEntry.COULMN_PET_NAME, "Toto");
-        values.put(PetContracts.PetEntry.COLUMN_PET_BREED, "Terrier");
-        values.put(PetContracts.PetEntry.COLUMN_PET_GENDER, PetContracts.PetEntry.GENDER_MALE);
-        values.put(PetContracts.PetEntry.COLUMN_PET_WEIGHT, 7);
-
-        // Insert a new row for Toto into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
-        // Receive the new content URI that will allow us to access Toto's data in the future.
-        Uri newUri = getContentResolver().insert(PetContracts.PetEntry.CONTENT_URI, values);
+        for (int i = 0; i < dummyPets.length; i++) {
+            for (int j = 0; j < dummyPets.length; ) {
+                values.put(PetContracts.PetEntry.COULMN_PET_NAME, dummyPets[i][j]);
+                values.put(PetContracts.PetEntry.COLUMN_PET_BREED, dummyPets[i][j + 1]);
+                values.put(PetContracts.PetEntry.COLUMN_PET_WEIGHT, dummyPets[i][j + 2]);
+                values.put(PetContracts.PetEntry.COLUMN_PET_GENDER, dummyGender[random.nextInt(dummyGender.length)]);
+                // Insert a new row for Toto into the provider using the ContentResolver.
+                // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
+                // into the pets database table.
+                // Receive the new content URI that will allow us to access Toto's data in the future.
+                Uri newUri = getContentResolver().insert(PetContracts.PetEntry.CONTENT_URI, values);
+                break;
+            }
+        }
     }
 
     @Override
